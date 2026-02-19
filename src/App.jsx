@@ -1,13 +1,42 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { miembrosFicticios } from './data'
 import Tarjeta from './components/Tarjeta'
+import Login from './components/login'
+
+// --- 1. IMPORTACIONES DE FIREBASE QUE FALTABAN ---
+import { auth } from './Firebase'
+import { onAuthStateChanged, signOut } from 'firebase/auth'
 
 function App() {
-  // 1. ESTADOS (Esto es lo que faltaba en tu snippet)
+  // --- 2. TODOS LOS HOOKS JUNTOS AL PRINCIPIO ---
+  // (React exige que siempre se ejecuten en este orden exacto)
+  const [estaLogueado, setEstaLogueado] = useState(false);
   const [busqueda, setBusqueda] = useState('');
   const [fuerzaActiva, setFuerzaActiva] = useState('TODOS');
+  const [cargando, setCargando] = useState(true);
 
-  // 2. DEFINICIÓN DE FILTROS (Esto también debe estar aquí)
+  useEffect(() => {
+    // Este escuchador verifica si ya habías entrado antes
+    const desuscribir = onAuthStateChanged(auth, (usuario) => {
+      if (usuario) {
+        setEstaLogueado(true);
+      } else {
+        setEstaLogueado(false);
+      }
+      setCargando(false);
+    });
+    return () => desuscribir();
+  }, []);
+
+  // --- 3. FUNCIONES DE LÓGICA ---
+  const cerrarSesion = async () => {
+    try {
+      await signOut(auth);
+    } catch (error) {
+      console.error("Error al salir:", error);
+    }
+  };
+
   const filtros = [
     { id: 'TODOS', label: 'Todos', color: 'bg-slate-500' },
     { id: 'ERD', label: 'Ejército', color: 'bg-green-800' },
@@ -16,30 +45,45 @@ function App() {
     { id: 'PN', label: 'Policía', color: 'bg-slate-900' },
   ];
 
-  // 3. LÓGICA DE FILTRADO
   const miembrosFiltrados = miembrosFicticios.filter((m) => {
     const nombreBusqueda = busqueda.toLowerCase();
     const nombreMiembro = m.nombre ? m.nombre.toLowerCase() : "";
-
-    // 1. Limpiamos el rango y la fuerza seleccionada
     const rangoLimpio = m.instRango ? m.instRango.replace(/\./g, '').toUpperCase() : "";
     const fuerzaLimpia = fuerzaActiva.replace(/\./g, '').toUpperCase();
 
-    // 2. Comprobamos el nombre
     const coincideNombre = nombreMiembro.includes(nombreBusqueda);
-
-    // 3. NUEVA LÓGICA: ¿Es la fuerza una palabra exacta al final o separada por espacio?
-    // Usamos una Expresión Regular para buscar la palabra exacta
     const regexFuerza = new RegExp(`\\b${fuerzaLimpia}\\b`);
     const coincideFuerza = fuerzaActiva === 'TODOS' || regexFuerza.test(rangoLimpio);
 
     return coincideNombre && coincideFuerza;
   });
 
+  // --- 4. LOS "GUARDIAS" DE PANTALLA (RETURNS CONDICIONALES) ---
+  // Estos van DESPUÉS de todos los hooks (useState/useEffect)
+
+  if (cargando) {
+    return (
+      <div className="min-h-screen bg-slate-950 flex items-center justify-center">
+        <p className="text-white font-bold animate-pulse">CARGANDO SISTEMA...</p>
+      </div>
+    );
+  }
+
+  if (!estaLogueado) {
+    return <Login alEntrar={() => setEstaLogueado(true)} />;
+  }
+
+  // --- 5. RENDERIZADO PRINCIPAL DEL DIRECTORIO ---
   return (
     <div className="min-h-screen bg-slate-50 p-6 sm:p-12">
-      <div className="max-w-4xl mx-auto">
+      <button
+        onClick={cerrarSesion}
+        className="fixed bottom-4 right-4 bg-red-600 hover:bg-red-700 text-white px-6 py-3 rounded-full text-xs font-bold shadow-2xl z-50 transition-all active:scale-90"
+      >
+        CERRAR SESIÓN SEGURA
+      </button>
 
+      <div className="max-w-4xl mx-auto">
         <header className="mb-12 text-center">
           <h1 className="text-5xl font-black text-slate-900 tracking-tighter mb-2">
             OBISPADO CASTRENSE
@@ -47,7 +91,6 @@ function App() {
           <p className="text-slate-500 font-medium">Directorio de Capellanes</p>
         </header>
 
-        {/* --- BARRA DE BÚSQUEDA --- */}
         <div className="mb-8 sticky top-4 z-10">
           <input
             type="text"
@@ -58,7 +101,6 @@ function App() {
           />
         </div>
 
-        {/* --- BOTONES DE FILTRO --- */}
         <div className="flex flex-wrap justify-center gap-2 mb-10">
           {filtros.map((f) => (
             <button
@@ -74,7 +116,6 @@ function App() {
           ))}
         </div>
 
-        {/* --- RESULTADOS --- */}
         <div className="grid gap-4">
           {miembrosFiltrados.length > 0 ? (
             miembrosFiltrados.map((m) => (
@@ -86,7 +127,6 @@ function App() {
             </div>
           )}
         </div>
-
       </div>
     </div>
   )
