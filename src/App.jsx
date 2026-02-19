@@ -1,3 +1,5 @@
+import { db } from './Firebase'
+import { collection, onSnapshot } from 'firebase/firestore'
 import React, { useState, useEffect } from 'react'
 import { miembrosFicticios } from './data'
 import Tarjeta from './components/Tarjeta'
@@ -14,18 +16,28 @@ function App() {
   const [busqueda, setBusqueda] = useState('');
   const [fuerzaActiva, setFuerzaActiva] = useState('TODOS');
   const [cargando, setCargando] = useState(true);
+  const [miembros, setMiembros] = useState([]); // lista vacia
 
   useEffect(() => {
-    // Este escuchador verifica si ya habías entrado antes
-    const desuscribir = onAuthStateChanged(auth, (usuario) => {
-      if (usuario) {
-        setEstaLogueado(true);
-      } else {
-        setEstaLogueado(false);
-      }
+    // 1. Vigilar el Login
+    const desuscribirAuth = onAuthStateChanged(auth, (usuario) => {
+      setEstaLogueado(!!usuario);
       setCargando(false);
     });
-    return () => desuscribir();
+
+    // 2. Vigilar la base de datos (Colección 'capellanes')
+    const desuscribirDocs = onSnapshot(collection(db, 'capellanes'), (snapshot) => {
+      const datosNube = snapshot.docs.map(doc => ({
+        id: doc.id,
+        ...doc.data()
+      }));
+      setMiembros(datosNube); // Actualiza la lista automáticamente
+    });
+
+    return () => {
+      desuscribirAuth();
+      desuscribirDocs();
+    };
   }, []);
 
   // --- 3. FUNCIONES DE LÓGICA ---
@@ -45,7 +57,7 @@ function App() {
     { id: 'PN', label: 'Policía', color: 'bg-slate-900' },
   ];
 
-  const miembrosFiltrados = miembrosFicticios.filter((m) => {
+  const miembrosFiltrados = miembros.filter((m) => {
     const nombreBusqueda = busqueda.toLowerCase();
     const nombreMiembro = m.nombre ? m.nombre.toLowerCase() : "";
     const rangoLimpio = m.instRango ? m.instRango.replace(/\./g, '').toUpperCase() : "";
