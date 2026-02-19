@@ -1,5 +1,5 @@
 import { db } from './Firebase'
-import { collection, onSnapshot } from 'firebase/firestore'
+import { collection, onSnapshot, doc, getDoc } from 'firebase/firestore'
 import React, { useState, useEffect } from 'react'
 import { miembrosFicticios } from './data'
 import Tarjeta from './components/Tarjeta'
@@ -17,11 +17,25 @@ function App() {
   const [fuerzaActiva, setFuerzaActiva] = useState('TODOS');
   const [cargando, setCargando] = useState(true);
   const [miembros, setMiembros] = useState([]); // lista vacia
+  const [rol, setRol] = useState(null);
 
   useEffect(() => {
-    // 1. Vigilar el Login
-    const desuscribirAuth = onAuthStateChanged(auth, (usuario) => {
-      setEstaLogueado(!!usuario);
+    const desuscribirAuth = onAuthStateChanged(auth, async (usuario) => {
+      if (usuario) {
+        // 1. Si hay usuario, buscamos su "ficha" en la colección 'usuarios'
+        const docRef = doc(db, "usuarios", usuario.uid);
+        const docSnap = await getDoc(docRef);
+
+        if (docSnap.exists()) {
+          setRol(docSnap.data().rol); // Guardamos "admin" en nuestro estado
+        } else {
+          setRol('lector'); // Si no existe en la colección, por defecto es lector
+        }
+        setEstaLogueado(true);
+      } else {
+        setEstaLogueado(false);
+        setRol(null);
+      }
       setCargando(false);
     });
 
@@ -87,13 +101,27 @@ function App() {
 
   // --- 5. RENDERIZADO PRINCIPAL DEL DIRECTORIO ---
   return (
+
     <div className="min-h-screen bg-slate-50 p-6 sm:p-12">
+
+      {/* Solo el Admin verá este bloque */}
+      {rol === 'admin' && (
+        <div className="bg-blue-100 p-4 rounded-2xl mb-6 border border-blue-200">
+          <h3 className="text-blue-800 font-bold">Panel de Control Castrense</h3>
+          <button className="bg-blue-600 text-white px-4 py-2 rounded-lg mt-2 font-bold">
+            + Agregar Nuevo Capellán
+          </button>
+        </div>
+      )}
+
       <button
         onClick={cerrarSesion}
         className="fixed bottom-4 right-4 bg-red-600 hover:bg-red-700 text-white px-6 py-3 rounded-full text-xs font-bold shadow-2xl z-50 transition-all active:scale-90"
       >
         CERRAR SESIÓN SEGURA
       </button>
+
+
 
       <div className="max-w-4xl mx-auto">
         <header className="mb-12 text-center">
