@@ -27,8 +27,13 @@ const Login = ({ alEntrar }) => {
             <div className="max-w-md w-full bg-slate-900 border border-slate-800 rounded-3xl p-8 shadow-2xl">
 
                 <div className="text-center mb-8">
-                    <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-blue-600/10 mb-4">
-                        <span className="text-3xl">🛡️</span>
+                    <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-white mb-4">
+                        <span className="text-3xl"><img
+                            src="src\assets\Escudo_Obispado_Castrense_RD.svg"
+                            alt=""
+                            srcset=""
+                            className="w-12 h-12"
+                        /></span>
                     </div>
                     <h2 className="text-2xl font-black text-white tracking-tight text-center">ACCESO PRIVADO</h2>
                     <p className="text-slate-400 text-sm mt-2 text-center">Obispado Castrense de la R.D.</p>
