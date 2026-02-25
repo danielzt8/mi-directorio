@@ -4,7 +4,14 @@ import { collection, onSnapshot, doc, getDoc } from "firebase/firestore";
 import React, { useState, useEffect } from "react";
 import { miembrosFicticios } from "./data";
 import Tarjeta from "./components/Tarjeta";
-import Login from "./components/login";
+import Login from "./components/Login";
+import {
+  BrowserRouter as Router,
+  Routes,
+  Route,
+  Navigate,
+} from "react-router-dom";
+import AdminPage from "./components/AdminPage";
 
 // --- 1. IMPORTACIONES DE FIREBASE QUE FALTABAN ---
 import { auth } from "./Firebase";
@@ -110,72 +117,77 @@ function App() {
 
   // --- 5. RENDERIZADO PRINCIPAL DEL DIRECTORIO ---
   return (
-    <div className="min-h-screen bg-slate-50">
-      <Navbar rol={rol} onLogout={cerrarSesion} />
+    <Router>
+      <div className="min-h-screen bg-slate-50">
+        <Navbar rol={rol} onLogout={cerrarSesion} />
 
-      <div className="p-6 sm:p-12">
-        {/* Solo el Admin verá este bloque */}
-        {rol === "admin" && (
-          <div className="bg-blue-100 p-4 rounded-2xl mb-6 border border-blue-200">
-            <h3 className="text-blue-800 font-bold">
-              Panel de Control Castrense
-            </h3>
-            <button className="bg-blue-600 text-white px-4 py-2 rounded-lg mt-2 font-bold">
-              + Agregar Nuevo Capellán
-            </button>
-          </div>
-        )}
+        <Routes>
+          <Route
+            path="/"
+            element={
+              <div className="p-6 sm:p-12">
+                {/* Solo el Admin verá este bloque */}
+                <div className="max-w-4xl mx-auto">
+                  <header className="mb-12 text-center">
+                    <h1 className="text-5xl font-black text-slate-900 tracking-tighter mb-2">
+                      OBISPADO CASTRENSE
+                    </h1>
+                    <p className="text-slate-500 font-medium">
+                      Directorio de Capellanes
+                    </p>
+                  </header>
 
-        <div className="max-w-4xl mx-auto">
-          <header className="mb-12 text-center">
-            <h1 className="text-5xl font-black text-slate-900 tracking-tighter mb-2">
-              OBISPADO CASTRENSE
-            </h1>
-            <p className="text-slate-500 font-medium">
-              Directorio de Capellanes
-            </p>
-          </header>
+                  <div className="mb-8 sticky top-4 z-10">
+                    <input
+                      type="text"
+                      placeholder="Buscar por nombre o rango (ej: ERD, Coronel...)"
+                      className="w-full p-5 rounded-2xl border-none shadow-lg ring-1 ring-slate-200 focus:ring-4 focus:ring-blue-500/20 outline-none transition-all text-lg"
+                      value={busqueda}
+                      onChange={(e) => setBusqueda(e.target.value)}
+                    />
+                  </div>
 
-          <div className="mb-8 sticky top-4 z-10">
-            <input
-              type="text"
-              placeholder="Buscar por nombre o rango (ej: ERD, Coronel...)"
-              className="w-full p-5 rounded-2xl border-none shadow-lg ring-1 ring-slate-200 focus:ring-4 focus:ring-blue-500/20 outline-none transition-all text-lg"
-              value={busqueda}
-              onChange={(e) => setBusqueda(e.target.value)}
-            />
-          </div>
+                  <div className="flex flex-wrap justify-center gap-2 mb-10">
+                    {filtros.map((f) => (
+                      <button
+                        key={f.id}
+                        onClick={() => setFuerzaActiva(f.id)}
+                        className={`px-4 py-2 rounded-lg text-sm font-bold transition-all transform active:scale-95 ${
+                          fuerzaActiva === f.id
+                            ? `${f.color} text-white shadow-lg scale-105`
+                            : "bg-white text-slate-600 border border-slate-200 hover:bg-slate-50"
+                        }`}
+                      >
+                        {f.label}
+                      </button>
+                    ))}
+                  </div>
 
-          <div className="flex flex-wrap justify-center gap-2 mb-10">
-            {filtros.map((f) => (
-              <button
-                key={f.id}
-                onClick={() => setFuerzaActiva(f.id)}
-                className={`px-4 py-2 rounded-lg text-sm font-bold transition-all transform active:scale-95 ${
-                  fuerzaActiva === f.id
-                    ? `${f.color} text-white shadow-lg scale-105`
-                    : "bg-white text-slate-600 border border-slate-200 hover:bg-slate-50"
-                }`}
-              >
-                {f.label}
-              </button>
-            ))}
-          </div>
-
-          <div className="grid gap-4">
-            {miembrosFiltrados.length > 0 ? (
-              miembrosFiltrados.map((m) => <Tarjeta key={m.id} datos={m} />)
-            ) : (
-              <div className="text-center py-16 bg-white rounded-2xl border-2 border-dashed border-slate-200">
-                <p className="text-slate-400">
-                  No hay resultados para esta selección.
-                </p>
+                  <div className="grid gap-4">
+                    {miembrosFiltrados.length > 0 ? (
+                      miembrosFiltrados.map((m) => (
+                        <Tarjeta key={m.id} datos={m} />
+                      ))
+                    ) : (
+                      <div className="text-center py-16 bg-white rounded-2xl border-2 border-dashed border-slate-200">
+                        <p className="text-slate-400">
+                          No hay resultados para esta selección.
+                        </p>
+                      </div>
+                    )}
+                  </div>
+                </div>
               </div>
-            )}
-          </div>
-        </div>
+            }
+          />
+
+          <Route
+            path="/admin"
+            element={rol === "admin" ? <AdminPage /> : <Navigate to="/" />}
+          />
+        </Routes>
       </div>
-    </div>
+    </Router>
   );
 }
 
