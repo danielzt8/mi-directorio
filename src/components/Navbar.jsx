@@ -30,19 +30,24 @@ const Navbar = ({ rol, onLogout }) => {
         {/* Actions */}
         <div className="flex items-center gap-4">
           {rol === "admin" && (
-            <span className="hidden sm:inline-block bg-blue-600/10 text-blue-400 text-[10px] font-black px-3 py-1 rounded-full border border-blue-500/20 uppercase">
-              Acceso Administrador
-            </span>
+            <>
+              <span className="hidden sm:inline-block bg-blue-600/10 text-blue-400 text-[10px] font-black px-3 py-1 rounded-full border border-blue-500/20 uppercase">
+                Acceso Administrador
+              </span>
+
+              <Link
+                to="/admin"
+                className="bg-blue-600 hover:bg-blue-700 text-white text-[10px] font-black px-4 py-2 rounded-lg uppercase transition-all"
+              >
+                Panel de Control
+              </Link>
+            </>
+
           )}
 
           {/* Solo el Admin verá este botón */}
 
-          <Link
-            to="/admin"
-            className="bg-blue-600 hover:bg-blue-700 text-white text-[10px] font-black px-4 py-2 rounded-lg uppercase transition-all"
-          >
-            Panel de Control
-          </Link>
+
 
           <button
             onClick={onLogout}
