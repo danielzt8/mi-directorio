@@ -1,4 +1,5 @@
 import React from "react";
+import { Link } from "react-router-dom";
 
 const Navbar = ({ rol, onLogout }) => {
   return (
@@ -33,6 +34,15 @@ const Navbar = ({ rol, onLogout }) => {
               Acceso Administrador
             </span>
           )}
+
+          {/* Solo el Admin verá este botón */}
+
+          <Link
+            to="/admin"
+            className="bg-blue-600 hover:bg-blue-700 text-white text-[10px] font-black px-4 py-2 rounded-lg uppercase transition-all"
+          >
+            Panel de Control
+          </Link>
 
           <button
             onClick={onLogout}
