@@ -120,11 +120,10 @@ const AdminPage = () => {
 
           {mensaje && (
             <div
-              className={`p-4 rounded-xl mb-6 font-bold text-center transition-all ${
-                mensaje.includes("✅") || mensaje.includes("🗑️")
+              className={`p-4 rounded-xl mb-6 font-bold text-center transition-all ${mensaje.includes("✅") || mensaje.includes("🗑️")
                   ? "bg-green-100 text-green-700"
                   : "bg-red-100 text-red-700"
-              }`}
+                }`}
             >
               {mensaje}
             </div>
@@ -176,6 +175,9 @@ const AdminPage = () => {
             </div>
 
             <div className="grid grid-cols-2 gap-4 md:col-span-2">
+              <label className="text-[10px] font-black uppercase text-slate-400 ml-2">
+                Misión
+              </label>
               <input
                 name="mision"
                 value={formData.mision}
@@ -183,6 +185,9 @@ const AdminPage = () => {
                 placeholder="Misión"
                 className="p-3 rounded-xl bg-slate-100 border-none outline-none focus:ring-2 focus:ring-blue-500"
               />
+              <label className="text-[10px] font-black uppercase text-slate-400 ml-2">
+                Diócesis
+              </label>
               <input
                 name="diocesis"
                 value={formData.diocesis}
@@ -190,6 +195,9 @@ const AdminPage = () => {
                 placeholder="Diócesis"
                 className="p-3 rounded-xl bg-slate-100 border-none outline-none focus:ring-2 focus:ring-blue-500"
               />
+              <label className="text-[10px] font-black uppercase text-slate-400 ml-2">
+                Teléfono
+              </label>
               <input
                 name="telefono"
                 value={formData.telefono}
@@ -197,6 +205,9 @@ const AdminPage = () => {
                 placeholder="Teléfono"
                 className="p-3 rounded-xl bg-slate-100 border-none outline-none focus:ring-2 focus:ring-blue-500"
               />
+              <label className="text-[10px] font-black uppercase text-slate-400 ml-2">
+                Cumpleaños
+              </label>
               <input
                 type="date"
                 name="cumpleaños"
@@ -205,6 +216,9 @@ const AdminPage = () => {
                 placeholder="Cumpleaños"
                 className="p-3 rounded-xl bg-slate-100 border-none outline-none focus:ring-2 focus:ring-blue-500"
               />
+              <label className="text-[10px] font-black uppercase text-slate-400 ml-2">
+                Fecha de Ordenación
+              </label>
               <input
                 type="date"
                 name="ordenacion"
