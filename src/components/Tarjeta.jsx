@@ -70,11 +70,11 @@ const Tarjeta = ({ datos }) => {
         <div className="mt-2 text-slate-500 text-sm space-y-1">
           <p>
             <span className="font-bold text-slate-700">Misión:</span>{" "}
-            {datos.mision}
+            {datos.mision || "No definido"}
           </p>
           <p>
             <span className="font-bold text-slate-700">Diócesis:</span>{" "}
-            {datos.diocesis}
+            {datos.diocesis || "No definido"}
           </p>
           <p>
             <span className="font-bold text-slate-700">Cumpleaños:</span>{" "}
@@ -82,7 +82,7 @@ const Tarjeta = ({ datos }) => {
           </p>
           <p>
             <span className="font-bold text-slate-700">Teléfono:</span>{" "}
-            {datos.telefono}
+            {datos.telefono || "Sin teléfono"}
           </p>
           <p>
             <span className="font-bold text-slate-700">Ordenación:</span>{" "}
