@@ -198,6 +198,7 @@ const AdminPage = () => {
                 className="p-3 rounded-xl bg-slate-100 border-none outline-none focus:ring-2 focus:ring-blue-500"
               />
               <input
+                type="date"
                 name="cumpleaños"
                 value={formData.cumpleaños}
                 onChange={handleChange}
@@ -205,7 +206,8 @@ const AdminPage = () => {
                 className="p-3 rounded-xl bg-slate-100 border-none outline-none focus:ring-2 focus:ring-blue-500"
               />
               <input
-                name="aniversario"
+                type="date"
+                name="ordenacion"
                 value={formData.ordenacion}
                 onChange={handleChange}
                 placeholder="Ej: 20 de mayo"
