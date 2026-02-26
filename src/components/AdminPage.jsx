@@ -1,6 +1,13 @@
 import React, { useState, useEffect } from "react";
 import { db } from "../Firebase";
-import { collection, onSnapshot, addDoc, updateDoc, deleteDoc, doc } from "firebase/firestore";
+import {
+  collection,
+  onSnapshot,
+  addDoc,
+  updateDoc,
+  deleteDoc,
+  doc,
+} from "firebase/firestore";
 import { Link } from "react-router-dom";
 
 const AdminPage = () => {
@@ -15,13 +22,14 @@ const AdminPage = () => {
     diocesis: "",
     telefono: "",
     foto: "",
-    cumpleaños: ""
+    cumpleaños: "",
+    ordenacion: "",
   });
 
   // 1. Real-time list of Chaplains for the management table
   useEffect(() => {
     const unsub = onSnapshot(collection(db, "capellanes"), (snap) => {
-      setMiembros(snap.docs.map(d => ({ id: d.id, ...d.data() })));
+      setMiembros(snap.docs.map((d) => ({ id: d.id, ...d.data() })));
     });
     return () => unsub();
   }, []);
@@ -46,7 +54,16 @@ const AdminPage = () => {
       }
 
       // Reset form
-      setFormData({ nombre: "", instRango: "", mision: "", diocesis: "", telefono: "", foto: "", cumpleaños: "" });
+      setFormData({
+        nombre: "",
+        instRango: "",
+        mision: "",
+        diocesis: "",
+        telefono: "",
+        foto: "",
+        cumpleaños: "",
+        ordenacion: "",
+      });
 
       // Clear message after 3 seconds
       setTimeout(() => setMensaje(""), 3000);
@@ -66,9 +83,10 @@ const AdminPage = () => {
       diocesis: m.diocesis || "",
       telefono: m.telefono || "",
       foto: m.foto || "",
-      cumpleaños: m.cumpleaños || ""
+      cumpleaños: m.cumpleaños || "",
+      ordenación: m.ordenacion || "",
     });
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+    window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
   // 4. Delete Logic
@@ -87,7 +105,10 @@ const AdminPage = () => {
   return (
     <div className="min-h-screen bg-slate-50 p-6 sm:p-12">
       <div className="max-w-4xl mx-auto">
-        <Link to="/" className="text-blue-600 hover:underline text-sm font-bold mb-6 inline-block uppercase">
+        <Link
+          to="/"
+          className="text-blue-600 hover:underline text-sm font-bold mb-6 inline-block uppercase"
+        >
           ← Volver al Directorio
         </Link>
 
@@ -98,42 +119,126 @@ const AdminPage = () => {
           </h2>
 
           {mensaje && (
-            <div className={`p-4 rounded-xl mb-6 font-bold text-center transition-all ${mensaje.includes('✅') || mensaje.includes('🗑️') ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'
-              }`}>
+            <div
+              className={`p-4 rounded-xl mb-6 font-bold text-center transition-all ${
+                mensaje.includes("✅") || mensaje.includes("🗑️")
+                  ? "bg-green-100 text-green-700"
+                  : "bg-red-100 text-red-700"
+              }`}
+            >
               {mensaje}
             </div>
           )}
 
-          <form onSubmit={handleSubmit} className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <form
+            onSubmit={handleSubmit}
+            className="grid grid-cols-1 md:grid-cols-2 gap-4"
+          >
             <div className="md:col-span-1">
-              <label className="text-[10px] font-black uppercase text-slate-400 ml-2">Nombre Completo</label>
-              <input name="nombre" value={formData.nombre} onChange={handleChange} placeholder="Ej: Francisco Ozoria" className="w-full p-3 rounded-xl bg-slate-100 border-none outline-none focus:ring-2 focus:ring-blue-500" required />
+              <label className="text-[10px] font-black uppercase text-slate-400 ml-2">
+                Nombre Completo
+              </label>
+              <input
+                name="nombre"
+                value={formData.nombre}
+                onChange={handleChange}
+                placeholder="Ej: Francisco Ozoria"
+                className="w-full p-3 rounded-xl bg-slate-100 border-none outline-none focus:ring-2 focus:ring-blue-500"
+                required
+              />
             </div>
 
             <div className="md:col-span-1">
-              <label className="text-[10px] font-black uppercase text-slate-400 ml-2">Rango e Institución</label>
-              <input name="instRango" value={formData.instRango} onChange={handleChange} placeholder="Ej: Mayor General, ERD" className="w-full p-3 rounded-xl bg-slate-100 border-none outline-none focus:ring-2 focus:ring-blue-500" required />
+              <label className="text-[10px] font-black uppercase text-slate-400 ml-2">
+                Rango e Institución
+              </label>
+              <input
+                name="instRango"
+                value={formData.instRango}
+                onChange={handleChange}
+                placeholder="Ej: Mayor General, ERD"
+                className="w-full p-3 rounded-xl bg-slate-100 border-none outline-none focus:ring-2 focus:ring-blue-500"
+                required
+              />
             </div>
 
             <div className="md:col-span-2">
-              <label className="text-[10px] font-black uppercase text-slate-400 ml-2">URL de la Foto (Enlace)</label>
-              <input name="foto" value={formData.foto} onChange={handleChange} placeholder="https://ejemplo.com/foto.jpg" className="w-full p-3 rounded-xl bg-slate-100 border-none outline-none focus:ring-2 focus:ring-blue-500" />
+              <label className="text-[10px] font-black uppercase text-slate-400 ml-2">
+                URL de la Foto (Enlace)
+              </label>
+              <input
+                name="foto"
+                value={formData.foto}
+                onChange={handleChange}
+                placeholder="https://ejemplo.com/foto.jpg"
+                className="w-full p-3 rounded-xl bg-slate-100 border-none outline-none focus:ring-2 focus:ring-blue-500"
+              />
             </div>
 
             <div className="grid grid-cols-2 gap-4 md:col-span-2">
-              <input name="mision" value={formData.mision} onChange={handleChange} placeholder="Misión" className="p-3 rounded-xl bg-slate-100 border-none outline-none focus:ring-2 focus:ring-blue-500" />
-              <input name="diocesis" value={formData.diocesis} onChange={handleChange} placeholder="Diócesis" className="p-3 rounded-xl bg-slate-100 border-none outline-none focus:ring-2 focus:ring-blue-500" />
-              <input name="telefono" value={formData.telefono} onChange={handleChange} placeholder="Teléfono" className="p-3 rounded-xl bg-slate-100 border-none outline-none focus:ring-2 focus:ring-blue-500" />
-              <input name="cumpleaños" value={formData.cumpleaños} onChange={handleChange} placeholder="Cumpleaños" className="p-3 rounded-xl bg-slate-100 border-none outline-none focus:ring-2 focus:ring-blue-500" />
+              <input
+                name="mision"
+                value={formData.mision}
+                onChange={handleChange}
+                placeholder="Misión"
+                className="p-3 rounded-xl bg-slate-100 border-none outline-none focus:ring-2 focus:ring-blue-500"
+              />
+              <input
+                name="diocesis"
+                value={formData.diocesis}
+                onChange={handleChange}
+                placeholder="Diócesis"
+                className="p-3 rounded-xl bg-slate-100 border-none outline-none focus:ring-2 focus:ring-blue-500"
+              />
+              <input
+                name="telefono"
+                value={formData.telefono}
+                onChange={handleChange}
+                placeholder="Teléfono"
+                className="p-3 rounded-xl bg-slate-100 border-none outline-none focus:ring-2 focus:ring-blue-500"
+              />
+              <input
+                name="cumpleaños"
+                value={formData.cumpleaños}
+                onChange={handleChange}
+                placeholder="Cumpleaños"
+                className="p-3 rounded-xl bg-slate-100 border-none outline-none focus:ring-2 focus:ring-blue-500"
+              />
+              <input
+                name="aniversario"
+                value={formData.ordenacion}
+                onChange={handleChange}
+                placeholder="Ej: 20 de mayo"
+                className="w-full p-3 rounded-xl bg-slate-100 border-none outline-none focus:ring-2 focus:ring-blue-500"
+              />
             </div>
 
             <div className="md:col-span-2 flex gap-2">
-              <button type="submit" className={`flex-1 p-4 rounded-xl font-black uppercase tracking-widest transition-all shadow-lg active:scale-95 text-white ${editandoId ? 'bg-orange-500 hover:bg-orange-600' : 'bg-blue-600 hover:bg-blue-700'}`}>
+              <button
+                type="submit"
+                className={`flex-1 p-4 rounded-xl font-black uppercase tracking-widest transition-all shadow-lg active:scale-95 text-white ${editandoId ? "bg-orange-500 hover:bg-orange-600" : "bg-blue-600 hover:bg-blue-700"}`}
+              >
                 {editandoId ? "Actualizar Datos" : "Guardar Capellán"}
               </button>
 
               {editandoId && (
-                <button type="button" onClick={() => { setEditandoId(null); setFormData({ nombre: "", instRango: "", mision: "", diocesis: "", telefono: "", foto: "", cumpleaños: "" }); }} className="bg-slate-200 text-slate-600 px-6 rounded-xl font-bold uppercase text-xs">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setEditandoId(null);
+                    setFormData({
+                      nombre: "",
+                      instRango: "",
+                      mision: "",
+                      diocesis: "",
+                      telefono: "",
+                      foto: "",
+                      cumpleaños: "",
+                      ordenacion: "",
+                    });
+                  }}
+                  className="bg-slate-200 text-slate-600 px-6 rounded-xl font-bold uppercase text-xs"
+                >
                   Cancelar
                 </button>
               )}
@@ -143,22 +248,41 @@ const AdminPage = () => {
 
         {/* --- LIST SECTION --- */}
         <div className="space-y-4">
-          <h3 className="text-xl font-black text-slate-400 uppercase tracking-widest ml-2">Gestión de Capellanes</h3>
+          <h3 className="text-xl font-black text-slate-400 uppercase tracking-widest ml-2">
+            Gestión de Capellanes
+          </h3>
           <div className="grid gap-3">
             {miembros.map((m) => (
-              <div key={m.id} className="bg-white p-4 rounded-2xl shadow-sm border border-slate-200 flex justify-between items-center hover:shadow-md transition-shadow">
+              <div
+                key={m.id}
+                className="bg-white p-4 rounded-2xl shadow-sm border border-slate-200 flex justify-between items-center hover:shadow-md transition-shadow"
+              >
                 <div className="flex items-center gap-4">
-                  <img src={m.foto || "https://via.placeholder.com/50"} alt="" className="w-12 h-12 rounded-full object-cover bg-slate-200" />
+                  <img
+                    src={m.foto || "https://via.placeholder.com/50"}
+                    alt=""
+                    className="w-12 h-12 rounded-full object-cover bg-slate-200"
+                  />
                   <div>
-                    <h4 className="font-bold text-slate-800 leading-none">{m.nombre}</h4>
-                    <p className="text-[10px] font-black text-slate-400 uppercase mt-1">{m.instRango}</p>
+                    <h4 className="font-bold text-slate-800 leading-none">
+                      {m.nombre}
+                    </h4>
+                    <p className="text-[10px] font-black text-slate-400 uppercase mt-1">
+                      {m.instRango}
+                    </p>
                   </div>
                 </div>
                 <div className="flex gap-2">
-                  <button onClick={() => prepararEdicion(m)} className="p-2 bg-blue-50 text-blue-600 rounded-lg hover:bg-blue-100 transition-colors">
+                  <button
+                    onClick={() => prepararEdicion(m)}
+                    className="p-2 bg-blue-50 text-blue-600 rounded-lg hover:bg-blue-100 transition-colors"
+                  >
                     ✏️
                   </button>
-                  <button onClick={() => eliminar(m.id)} className="p-2 bg-red-50 text-red-600 rounded-lg hover:bg-red-100 transition-colors">
+                  <button
+                    onClick={() => eliminar(m.id)}
+                    className="p-2 bg-red-50 text-red-600 rounded-lg hover:bg-red-100 transition-colors"
+                  >
                     🗑️
                   </button>
                 </div>
