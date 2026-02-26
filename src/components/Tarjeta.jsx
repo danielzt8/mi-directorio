@@ -39,6 +39,13 @@ const Tarjeta = ({ datos }) => {
 
   const estilo = obtenerEstiloFuerza(datos.instRango);
 
+  const formatearFecha = (fecha) => {
+    if (!fecha) return "No definida";
+    // The "T00:00:00" prevents the date from shifting due to timezones
+    const opciones = { day: "numeric", month: "long", year: "numeric" };
+    return new Date(fecha + "T00:00:00").toLocaleDateString("es-ES", opciones);
+  };
+
   return (
     <div
       className={`bg-white rounded-2xl shadow-sm border border-slate-200 border-l-8 ${estilo.borde} p-5 flex items-center gap-6 hover:shadow-md transition-all`}
@@ -71,7 +78,7 @@ const Tarjeta = ({ datos }) => {
           </p>
           <p>
             <span className="font-bold text-slate-700">Cumpleaños:</span>{" "}
-            {datos.cumpleaños}
+            {formatearFecha(datos.cumpleaños)}
           </p>
           <p>
             <span className="font-bold text-slate-700">Teléfono:</span>{" "}
@@ -79,7 +86,7 @@ const Tarjeta = ({ datos }) => {
           </p>
           <p>
             <span className="font-bold text-slate-700">Ordenación:</span>{" "}
-            {datos.ordenacion}
+            {formatearFecha(datos.ordenacion)}
           </p>
         </div>
       </div>
