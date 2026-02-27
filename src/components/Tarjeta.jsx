@@ -52,7 +52,10 @@ const Tarjeta = ({ datos }) => {
     >
       {/* Espacio para la foto */}
       <img
-        src={datos.foto}
+        src={
+          datos.foto ||
+          "https://i.pinimg.com/736x/7f/d0/f2/7fd0f2496d897b53cde2439f141450ca.jpg"
+        }
         alt={datos.nombre}
         className={`w-24 h-24 rounded-xl object-cover ring-2 ring-offset-2 ${estilo.borde.replace("border-l", "ring")}`}
       />
