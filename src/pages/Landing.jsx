@@ -5,8 +5,15 @@ const Landing = () => {
   return (
     <div className="min-h-screen bg-slate-950 flex flex-col items-center justify-center p-6 text-center">
       {/* Logo Area */}
-      <div className="bg-blue-600/20 p-6 rounded-3xl mb-8 animate-bounce">
-        <span className="text-6xl">🛡️</span>
+      <div className="bg-white p-6 rounded-3xl mb-8">
+        <span className="text-6xl">
+          <img
+            src="src\assets\Escudo_Obispado_Castrense_RD.svg"
+            alt=""
+            srcset=""
+            className="w-12 h-12"
+          />
+        </span>
       </div>
 
       {/* App Name */}
