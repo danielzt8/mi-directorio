@@ -105,15 +105,11 @@ function App() {
   if (cargando) {
     return (
       <div className="min-h-screen bg-slate-950 flex items-center justify-center">
-        <p className="text-white font-bold animate-pulse">
-          CARGANDO SISTEMA...
+        <p className="text-white font-bold animate-pulse uppercase">
+          Cargando sistema...
         </p>
       </div>
     );
-  }
-
-  if (!estaLogueado) {
-    return <Login alEntrar={() => setEstaLogueado(true)} />;
   }
 
   // --- 5. RENDERIZADO PRINCIPAL DEL DIRECTORIO ---
