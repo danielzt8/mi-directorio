@@ -28,6 +28,7 @@ function App() {
   const [cargando, setCargando] = useState(true);
   const [miembros, setMiembros] = useState([]); // lista vacia
   const [rol, setRol] = useState(null);
+  const [debeCambiar, setDebeCambiar] = useState(false);
 
   useEffect(() => {
     const desuscribirAuth = onAuthStateChanged(auth, async (usuario) => {
@@ -37,7 +38,10 @@ function App() {
         const docSnap = await getDoc(docRef);
 
         if (docSnap.exists()) {
+          const data = docSnap.data();
           setRol(docSnap.data().rol); // Guardamos "admin" en nuestro estado
+          // También guardamos si el usuario debe cambiar su contraseña
+          setDebeCambiar(data.debeCambiarPassword || false);
         } else {
           setRol("lector"); // Si no existe en la colección, por defecto es lector
         }
@@ -45,9 +49,9 @@ function App() {
       } else {
         setEstaLogueado(false);
         setRol(null);
+        setDebeCambiar(false);
       }
       setCargando(false);
-      setDebeCambiar(data.debeCambiarPassword || false);
     });
 
     // 2. Vigilar la base de datos (Colección 'capellanes')
@@ -140,59 +144,64 @@ function App() {
             path="/"
             element={
               estaLogueado ? (
-                <div className="p-6 sm:p-12">
-                  {/* Solo el Admin verá este bloque */}
-                  <div className="max-w-4xl mx-auto">
-                    <header className="mb-12 text-center">
-                      <h1 className="text-5xl font-black text-slate-900 tracking-tighter mb-2">
-                        OBISPADO CASTRENSE
-                      </h1>
-                      <p className="text-slate-500 font-medium">
-                        Directorio de Capellanes
-                      </p>
-                    </header>
+                // CHECK: If the "force change" flag is active, send them to Perfil
+                debeCambiar ? (
+                  <Navigate to="/perfil" />
+                ) : (
+                  // Otherwise, show the directory as normal
+                  <div className="p-6 sm:p-12">
+                    <div className="max-w-4xl mx-auto">
+                      <header className="mb-12 text-center">
+                        <h1 className="text-5xl font-black text-slate-900 tracking-tighter mb-2 uppercase">
+                          Obispado Castrense
+                        </h1>
+                        <p className="text-slate-500 font-medium">
+                          Directorio de Capellanes
+                        </p>
+                      </header>
 
-                    <div className="mb-8 sticky top-4 z-10">
-                      <input
-                        type="text"
-                        placeholder="Buscar por nombre o rango (ej: ERD, Coronel...)"
-                        className="w-full p-5 rounded-2xl border-none shadow-lg ring-1 ring-slate-200 focus:ring-4 focus:ring-blue-500/20 outline-none transition-all text-lg"
-                        value={busqueda}
-                        onChange={(e) => setBusqueda(e.target.value)}
-                      />
-                    </div>
+                      <div className="mb-8 sticky top-4 z-10">
+                        <input
+                          type="text"
+                          placeholder="Buscar por nombre o rango (ej: ERD, Coronel...)"
+                          className="w-full p-5 rounded-2xl border-none shadow-lg ring-1 ring-slate-200 focus:ring-4 focus:ring-blue-500/20 outline-none transition-all text-lg"
+                          value={busqueda}
+                          onChange={(e) => setBusqueda(e.target.value)}
+                        />
+                      </div>
 
-                    <div className="flex flex-wrap justify-center gap-2 mb-10">
-                      {filtros.map((f) => (
-                        <button
-                          key={f.id}
-                          onClick={() => setFuerzaActiva(f.id)}
-                          className={`px-4 py-2 rounded-lg text-sm font-bold transition-all transform active:scale-95 ${
-                            fuerzaActiva === f.id
-                              ? `${f.color} text-white shadow-lg scale-105`
-                              : "bg-white text-slate-600 border border-slate-200 hover:bg-slate-50"
-                          }`}
-                        >
-                          {f.label}
-                        </button>
-                      ))}
-                    </div>
+                      <div className="flex flex-wrap justify-center gap-2 mb-10">
+                        {filtros.map((f) => (
+                          <button
+                            key={f.id}
+                            onClick={() => setFuerzaActiva(f.id)}
+                            className={`px-4 py-2 rounded-lg text-sm font-bold transition-all transform active:scale-95 ${
+                              fuerzaActiva === f.id
+                                ? `${f.color} text-white shadow-lg scale-105`
+                                : "bg-white text-slate-600 border border-slate-200 hover:bg-slate-50"
+                            }`}
+                          >
+                            {f.label}
+                          </button>
+                        ))}
+                      </div>
 
-                    <div className="grid gap-4">
-                      {miembrosFiltrados.length > 0 ? (
-                        miembrosFiltrados.map((m) => (
-                          <Tarjeta key={m.id} datos={m} />
-                        ))
-                      ) : (
-                        <div className="text-center py-16 bg-white rounded-2xl border-2 border-dashed border-slate-200">
-                          <p className="text-slate-400">
-                            No hay resultados para esta selección.
-                          </p>
-                        </div>
-                      )}
+                      <div className="grid gap-4">
+                        {miembrosFiltrados.length > 0 ? (
+                          miembrosFiltrados.map((m) => (
+                            <Tarjeta key={m.id} datos={m} />
+                          ))
+                        ) : (
+                          <div className="text-center py-16 bg-white rounded-2xl border-2 border-dashed border-slate-200">
+                            <p className="text-slate-400">
+                              No hay resultados para esta selección.
+                            </p>
+                          </div>
+                        )}
+                      </div>
                     </div>
                   </div>
-                </div>
+                )
               ) : (
                 <Navigate to="/home" />
               )

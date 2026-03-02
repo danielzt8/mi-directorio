@@ -10,36 +10,43 @@ const Perfil = () => {
 
   const handleCambiarPassword = async (e) => {
     e.preventDefault();
-    if (nuevaPassword.length < 6) {
-      setMensaje({
-        texto: "La contraseña debe tener al menos 6 caracteres",
-        tipo: "error",
-      });
-      return;
-    }
 
-    if (nuevaPassword !== nuevaPassword.confirmar) {
-      setMensaje({
-        texto: "Las contraseñas no coinciden",
-        tipo: "error",
-      });
+    // Basic validation
+    if (passwordData.nueva !== passwordData.confirmar) {
+      setMensaje({ texto: "❌ Las contraseñas no coinciden", tipo: "error" });
       return;
     }
 
     setCargando(true);
     try {
       const usuario = auth.currentUser;
-      await updatePassword(usuario, nuevaPassword);
+
+      // 1. Update the password in Firebase Auth
+      await updatePassword(usuario, passwordData.nueva);
+
+      // 2. IMPORTANT: Update the 'debeCambiarPassword' flag in Firestore
+      const userRef = doc(db, "usuarios", usuario.uid);
+      await updateDoc(userRef, {
+        debeCambiarPassword: false,
+      });
+
       setMensaje({
-        texto: "✅ Contraseña actualizada correctamente",
+        texto: "✅ Contraseña actualizada. Ahora tienes acceso total.",
         tipo: "exito",
       });
-      setNuevaPassword("");
+
+      // 3. Optional: Clear the form
+      setPasswordData({ nueva: "", confirmar: "" });
+
+      // 4. Redirect after 2 seconds so they can see the success message
+      setTimeout(() => {
+        window.location.href = "/";
+      }, 2000);
     } catch (error) {
       console.error(error);
       setMensaje({
         texto:
-          "❌ Error. Por seguridad, re-inicia sesión antes de cambiar la contraseña.",
+          "❌ Re-inicia sesión para cambiar la contraseña (por seguridad).",
         tipo: "error",
       });
     }

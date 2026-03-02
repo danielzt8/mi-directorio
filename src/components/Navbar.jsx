@@ -29,6 +29,13 @@ const Navbar = ({ rol, onLogout }) => {
 
         {/* Actions */}
         <div className="flex items-center gap-4">
+          <Link
+            to="/perfil"
+            className="text-slate-400 hover:text-white text-xs font-bold"
+          >
+            Mi Perfil
+          </Link>
+
           {rol === "admin" && (
             <>
               <span className="hidden sm:inline-block bg-blue-600/10 text-blue-400 text-[10px] font-black px-3 py-1 rounded-full border border-blue-500/20 uppercase">
@@ -40,13 +47,6 @@ const Navbar = ({ rol, onLogout }) => {
                 className="bg-blue-600 hover:bg-blue-700 text-white text-[10px] font-black px-4 py-2 rounded-lg uppercase transition-all"
               >
                 Panel de Control
-              </Link>
-
-              <Link
-                to="/perfil"
-                className="text-slate-400 hover:text-white text-xs font-bold"
-              >
-                Mi Perfil
               </Link>
             </>
           )}
