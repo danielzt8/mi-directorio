@@ -41,13 +41,17 @@ const Navbar = ({ rol, onLogout }) => {
               >
                 Panel de Control
               </Link>
-            </>
 
+              <Link
+                to="/perfil"
+                className="text-slate-400 hover:text-white text-xs font-bold"
+              >
+                Mi Perfil
+              </Link>
+            </>
           )}
 
           {/* Solo el Admin verá este botón */}
-
-
 
           <button
             onClick={onLogout}

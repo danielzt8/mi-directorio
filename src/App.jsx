@@ -13,6 +13,7 @@ import {
 } from "react-router-dom";
 import AdminPage from "./components/AdminPage";
 import Landing from "./pages/Landing";
+import Perfil from "./pages/Perfil";
 
 // --- 1. IMPORTACIONES DE FIREBASE QUE FALTABAN ---
 import { auth } from "./Firebase";
@@ -46,6 +47,7 @@ function App() {
         setRol(null);
       }
       setCargando(false);
+      setDebeCambiar(data.debeCambiarPassword || false);
     });
 
     // 2. Vigilar la base de datos (Colección 'capellanes')
@@ -116,7 +118,7 @@ function App() {
   return (
     <Router>
       <div className="min-h-screen bg-slate-50">
-        <Navbar rol={rol} onLogout={cerrarSesion} />
+        {estaLogueado && <Navbar rol={rol} onLogout={cerrarSesion} />}
 
         <Routes>
           {/* 1. PUBLIC LANDING PAGE */}
@@ -200,6 +202,11 @@ function App() {
           <Route
             path="/admin"
             element={rol === "admin" ? <AdminPage /> : <Navigate to="/" />}
+          />
+
+          <Route
+            path="/perfil"
+            element={estaLogueado ? <Perfil /> : <Navigate to="/home" />}
           />
         </Routes>
       </div>
